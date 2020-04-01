@@ -20,7 +20,7 @@ from setuptools import setup, find_packages, Extension, Feature
 
 if not hasattr(sys, 'version_info') or \
         sys.version_info < (2, 6, 0, 'final'):
-    raise SystemExit("http-parser requires Python 2.6x or later")
+    raise SystemExit("toil-http-parser requires Python 2.6x or later")
 
 ext_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError)
 if sys.platform == 'win32' and sys.version_info > (2, 6):
@@ -145,14 +145,14 @@ def run_setup(with_binary):
 
 
     setup(
-        name = 'http-parser',
+        name = 'toil-http-parser',
         version = VERSION,
         description = 'http request/response parser',
         long_description = LONG_DESCRIPTION,
-        author = 'Benoit Chesneau',
+        author = 'Benoit Chesneau is the real author; DailyDreaming is temporarily forking this as a py3.7 fix',
         author_email = 'benoitc@e-engura.com',
         license = 'MIT',
-        url = 'http://github.com/benoitc/http-parser',
+        url = 'https://github.com/DailyDreaming/toil-http-parser',
         classifiers = CLASSIFIERS,
         platforms=['any'],
         packages = find_packages(),
