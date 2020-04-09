@@ -4,8 +4,8 @@ import os
 import socket
 
 import pytest
-from http_parser.http import HttpStream
-from http_parser.reader import SocketReader
+from toil_http_parser.http import HttpStream
+from toil_http_parser.reader import SocketReader
 
 class FakeInputSocket(object):
     def __init__(self, events):

@@ -5,5 +5,5 @@ include README.rst
 include THANKS
 include TODO.md
 include Makefile.ext
-recursive-include http_parser *
+recursive-include toil_http_parser *
 recursive-include examples *

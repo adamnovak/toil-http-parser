@@ -12,14 +12,14 @@ except ImportError:
 
 import zlib
 
-from http_parser.util import b, bytes_to_str, IOrderedDict, unquote
+from toil_http_parser.util import b, bytes_to_str, IOrderedDict, unquote
 
 cdef extern from "pyversion_compat.h":
     pass
 
 from cpython cimport PyBytes_FromStringAndSize
 
-cdef extern from "http_parser.h" nogil:
+cdef extern from "toil_http_parser.h" nogil:
     cdef enum http_errno:
         HPE_OK, HPE_UNKNOWN
 
@@ -31,10 +31,10 @@ cdef extern from "http_parser.h" nogil:
         HTTP_NOTIFY, HTTP_SUBSCRIBE, HTTP_UNSUBSCRIBE, HTTP_PATCH,
         HTTP_PURGE
 
-    cdef enum http_parser_type:
+    cdef enum toil_http_parser_type:
         HTTP_REQUEST, HTTP_RESPONSE, HTTP_BOTH
 
-    cdef struct http_parser:
+    cdef struct toil_http_parser:
         int content_length
         unsigned short http_major
         unsigned short http_minor
@@ -44,10 +44,10 @@ cdef extern from "http_parser.h" nogil:
         char upgrade
         void *data
 
-    ctypedef int (*http_data_cb) (http_parser*, char *at, size_t length)
-    ctypedef int (*http_cb) (http_parser*)
+    ctypedef int (*http_data_cb) (toil_http_parser*, char *at, size_t length)
+    ctypedef int (*http_cb) (toil_http_parser*)
 
-    struct http_parser_settings:
+    struct toil_http_parser_settings:
         http_cb on_message_begin
         http_data_cb on_url
         http_data_cb on_header_field
@@ -56,14 +56,14 @@ cdef extern from "http_parser.h" nogil:
         http_data_cb on_body
         http_cb on_message_complete
 
-    void http_parser_init(http_parser *parser,
-            http_parser_type ptype)
+    void toil_http_parser_init(toil_http_parser *parser,
+            toil_http_parser_type ptype)
 
-    size_t http_parser_execute(http_parser *parser,
-            http_parser_settings *settings, char *data,
+    size_t toil_http_parser_execute(toil_http_parser *parser,
+            toil_http_parser_settings *settings, char *data,
             size_t len)
 
-    int http_should_keep_alive(http_parser *parser)
+    int http_should_keep_alive(toil_http_parser *parser)
 
     char *http_method_str(http_method)
 
@@ -72,13 +72,13 @@ cdef extern from "http_parser.h" nogil:
     char *http_errno_description(http_errno)
 
 
-cdef int on_url_cb(http_parser *parser, char *at,
+cdef int on_url_cb(toil_http_parser *parser, char *at,
         size_t length):
     res = <object>parser.data
     res.url += bytes_to_str(PyBytes_FromStringAndSize(at, length))
     return 0
 
-cdef int on_header_field_cb(http_parser *parser, char *at,
+cdef int on_header_field_cb(toil_http_parser *parser, char *at,
         size_t length):
     header_field = PyBytes_FromStringAndSize(at, length)
     res = <object>parser.data
@@ -89,7 +89,7 @@ cdef int on_header_field_cb(http_parser *parser, char *at,
     res._last_was_value = False
     return 0
 
-cdef int on_header_value_cb(http_parser *parser, char *at,
+cdef int on_header_value_cb(toil_http_parser *parser, char *at,
         size_t length):
     res = <object>parser.data
     header_value = bytes_to_str(PyBytes_FromStringAndSize(at, length))
@@ -106,7 +106,7 @@ cdef int on_header_value_cb(http_parser *parser, char *at,
     res._last_was_value = True
     return 0
 
-cdef int on_headers_complete_cb(http_parser *parser):
+cdef int on_headers_complete_cb(toil_http_parser *parser):
     res = <object>parser.data
     res.headers_complete = True
 
@@ -124,12 +124,12 @@ cdef int on_headers_complete_cb(http_parser *parser):
 
     return res.header_only and 1 or 0
 
-cdef int on_message_begin_cb(http_parser *parser):
+cdef int on_message_begin_cb(toil_http_parser *parser):
     res = <object>parser.data
     res.message_begin = True
     return 0
 
-cdef int on_body_cb(http_parser *parser, char *at,
+cdef int on_body_cb(toil_http_parser *parser, char *at,
         size_t length):
     res = <object>parser.data
     value = PyBytes_FromStringAndSize(at, length)
@@ -151,7 +151,7 @@ cdef int on_body_cb(http_parser *parser, char *at,
     res.body.append(value)
     return 0
 
-cdef int on_message_complete_cb(http_parser *parser):
+cdef int on_message_complete_cb(toil_http_parser *parser):
     res = <object>parser.data
     res.message_complete = True
     return 0
@@ -193,8 +193,8 @@ class _ParserData(object):
 cdef class HttpParser:
     """ Low level HTTP parser.  """
 
-    cdef http_parser _parser
-    cdef http_parser_settings _settings
+    cdef toil_http_parser _parser
+    cdef toil_http_parser_settings _settings
     cdef object _data
 
     cdef str _path
@@ -219,7 +219,7 @@ cdef class HttpParser:
             parser_type = HTTP_REQUEST
 
         # initialize parser
-        http_parser_init(&self._parser, parser_type)
+        toil_http_parser_init(&self._parser, parser_type)
         self._data = _ParserData(decompress=decompress, header_only=header_only)
         self._parser.data = <void *>self._data
         self._parsed_url = None
@@ -244,7 +244,7 @@ cdef class HttpParser:
         :return recved: Int, received length of the data parsed. if
         recvd != length you should return an error.
         """
-        return http_parser_execute(&self._parser, &self._settings,
+        return toil_http_parser_execute(&self._parser, &self._settings,
                 data, length)
 
     def get_errno(self):

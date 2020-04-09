@@ -6,7 +6,7 @@
 
 from io import DEFAULT_BUFFER_SIZE, RawIOBase
 
-from http_parser.util import StringIO
+from toil_http_parser.util import StringIO
 
 import types
 
@@ -103,7 +103,7 @@ class StringReader(IterReader):
             iterable = string
         IterReader.__init__(self, iterable)
 
-from http_parser._socketio import SocketIO
+from toil_http_parser._socketio import SocketIO
 
 class SocketReader(SocketIO):
     def __init__(self, sock):

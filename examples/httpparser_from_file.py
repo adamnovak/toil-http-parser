@@ -4,7 +4,7 @@ Created on 2012-3-24
 
 @author: fengclient
 '''
-from http_parser.pyparser import HttpParser
+from toil_http_parser.pyparser import HttpParser
 
 if __name__ == '__main__':
     rsp = open('d:\\172_response.txt').read()

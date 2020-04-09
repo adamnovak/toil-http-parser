@@ -28,7 +28,7 @@ if sys.platform == 'win32' and sys.version_info > (2, 6):
    # find the compiler
    ext_errors += (IOError,)
 
-http_parser = load_source("http_parser", os.path.join("http_parser",
+toil_http_parser = load_source("toil_http_parser", os.path.join("toil_http_parser",
         "__init__.py"))
 
 IS_PYPY = hasattr(sys, 'pypy_version_info')
@@ -47,7 +47,7 @@ CLASSIFIERS = [
         'Topic :: Utilities',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]
-VERSION = http_parser.__version__
+VERSION = toil_http_parser.__version__
 
 # get long description
 with io.open(os.path.join(os.path.dirname(__file__), 'README.rst'), encoding='utf8') as f:
@@ -100,7 +100,7 @@ class my_build_ext(build_ext):
             else:
                 raise
         # hack: create a symlink from build/../core.so to
-        # http_parser/parser.so
+        # toil_http_parser/parser.so
         # to prevent "ImportError: cannot import name core" failures
         try:
             fullname = self.get_ext_fullname(ext.name)
@@ -111,7 +111,7 @@ class my_build_ext(build_ext):
                 filename = os.path.join(*modpath[:-1] + [filename])
                 path_to_build_core_so = os.path.abspath(os.path.join(self.build_lib,
                     filename))
-                path_to_core_so = os.path.abspath(os.path.join('http_parser',
+                path_to_core_so = os.path.abspath(os.path.join('toil_http_parser',
                     os.path.basename(path_to_build_core_so)))
                 if path_to_build_core_so != path_to_core_so:
                     try:
@@ -136,9 +136,9 @@ def run_setup(with_binary):
     if with_binary:
         extra.update(dict(
             ext_modules = [
-                Extension('http_parser.parser', [
-                    os.path.join('http_parser', 'http_parser.c'),
-                    os.path.join('http_parser', 'parser.c')
+                Extension('toil_http_parser.parser', [
+                    os.path.join('toil_http_parser', 'toil_http_parser.c'),
+                    os.path.join('toil_http_parser', 'parser.c')
                 ], ['parser'])],
             cmdclass=dict(build_ext=my_build_ext, sdist=sdist)
         ))

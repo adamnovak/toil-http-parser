@@ -21,7 +21,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-#include "http_parser.h"
+#include "toil_http_parser.h"
 #include <assert.h>
 #include <stddef.h>
 #include <ctype.h>
@@ -408,13 +408,13 @@ static struct {
 };
 #undef HTTP_STRERROR_GEN
 
-int http_message_needs_eof(const http_parser *parser);
+int http_message_needs_eof(const toil_http_parser *parser);
 
 /* Our URL parser.
  *
- * This is designed to be shared by http_parser_execute() for URL validation,
+ * This is designed to be shared by toil_http_parser_execute() for URL validation,
  * hence it has a state transition + byte-for-byte interface. In addition, it
- * is meant to be embedded in http_parser_parse_url(), which does the dirty
+ * is meant to be embedded in toil_http_parser_parse_url(), which does the dirty
  * work of turning state transitions URL components for its API.
  *
  * This function should only be invoked with non-space characters. It is
@@ -569,8 +569,8 @@ parse_url_char(enum state s, const char ch)
   return s_dead;
 }
 
-size_t http_parser_execute (http_parser *parser,
-                            const http_parser_settings *settings,
+size_t toil_http_parser_execute (toil_http_parser *parser,
+                            const toil_http_parser_settings *settings,
                             const char *data,
                             size_t len)
 {
@@ -1864,7 +1864,7 @@ error:
 
 /* Does the parser need to see an EOF to find the end of the message? */
 int
-http_message_needs_eof (const http_parser *parser)
+http_message_needs_eof (const toil_http_parser *parser)
 {
   if (parser->type == HTTP_REQUEST) {
     return 0;
@@ -1887,7 +1887,7 @@ http_message_needs_eof (const http_parser *parser)
 
 
 int
-http_should_keep_alive (const http_parser *parser)
+http_should_keep_alive (const toil_http_parser *parser)
 {
   if (parser->http_major > 0 && parser->http_minor > 0) {
     /* HTTP/1.1 */
@@ -1913,7 +1913,7 @@ http_method_str (enum http_method m)
 
 
 void
-http_parser_init (http_parser *parser, enum http_parser_type t)
+toil_http_parser_init (toil_http_parser *parser, enum toil_http_parser_type t)
 {
   void *data = parser->data; /* preserve application data */
   memset(parser, 0, sizeof(*parser));
@@ -2001,7 +2001,7 @@ http_parse_host_char(enum http_host_state s, const char ch) {
 }
 
 static int
-http_parse_host(const char * buf, struct http_parser_url *u, int found_at) {
+http_parse_host(const char * buf, struct toil_http_parser_url *u, int found_at) {
   enum http_host_state s;
 
   const char *p;
@@ -2074,12 +2074,12 @@ http_parse_host(const char * buf, struct http_parser_url *u, int found_at) {
 }
 
 int
-http_parser_parse_url(const char *buf, size_t buflen, int is_connect,
-                      struct http_parser_url *u)
+toil_http_parser_parse_url(const char *buf, size_t buflen, int is_connect,
+                      struct toil_http_parser_url *u)
 {
   enum state s;
   const char *p;
-  enum http_parser_url_fields uf, old_uf;
+  enum toil_http_parser_url_fields uf, old_uf;
   int found_at = 0;
 
   u->port = u->field_set = 0;
@@ -2173,7 +2173,7 @@ http_parser_parse_url(const char *buf, size_t buflen, int is_connect,
 }
 
 void
-http_parser_pause(http_parser *parser, int paused) {
+toil_http_parser_pause(toil_http_parser *parser, int paused) {
   /* Users should only be pausing/unpausing a parser that is not in an error
    * state. In non-debug builds, there's not much that we can do about this
    * other than ignore it.
@@ -2187,12 +2187,12 @@ http_parser_pause(http_parser *parser, int paused) {
 }
 
 int
-http_body_is_final(const struct http_parser *parser) {
+http_body_is_final(const struct toil_http_parser *parser) {
     return parser->state == s_message_done;
 }
 
 unsigned long
-http_parser_version(void) {
+toil_http_parser_version(void) {
   return HTTP_PARSER_VERSION_MAJOR * 0x10000 |
          HTTP_PARSER_VERSION_MINOR * 0x00100 |
          HTTP_PARSER_VERSION_PATCH * 0x00001;

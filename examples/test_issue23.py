@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import socket
 
-from http_parser.http import HttpStream
-from http_parser.reader import SocketReader
+from toil_http_parser.http import HttpStream
+from toil_http_parser.reader import SocketReader
 
-from http_parser.util import b
+from toil_http_parser.util import b
 
 def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

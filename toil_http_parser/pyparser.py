@@ -14,7 +14,7 @@ else:
 
 import zlib
 
-from http_parser.util import (b, bytes_to_str, IOrderedDict, StringIO,
+from toil_http_parser.util import (b, bytes_to_str, IOrderedDict, StringIO,
         unquote, MAXSIZE)
 
 

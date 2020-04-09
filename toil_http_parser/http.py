@@ -6,12 +6,12 @@
 from io import DEFAULT_BUFFER_SIZE, BufferedReader, TextIOWrapper
 
 try:
-    from http_parser.parser import HttpParser
+    from toil_http_parser.parser import HttpParser
 except ImportError:
-    from http_parser.pyparser import HttpParser
+    from toil_http_parser.pyparser import HttpParser
 
-from http_parser.reader import HttpBodyReader
-from http_parser.util import status_reasons, bytes_to_str
+from toil_http_parser.reader import HttpBodyReader
+from toil_http_parser.util import status_reasons, bytes_to_str
 
 HTTP_BOTH = 2
 HTTP_RESPONSE = 1
@@ -31,7 +31,7 @@ class BadStatusLine(Exception):
 class HttpStream(object):
     """ An HTTP parser providing higher-level access to a readable,
     sequential io.RawIOBase object. You can use implementions of
-    http_parser.reader (IterReader, StringReader, SocketReader) or
+    toil_http_parser.reader (IterReader, StringReader, SocketReader) or
     create your own.
     """
 

@@ -59,8 +59,8 @@ ex::
     #!/usr/bin/env python
     import socket
 
-    from http_parser.http import HttpStream
-    from http_parser.reader import SocketReader
+    from toil_http_parser.http import HttpStream
+    from toil_http_parser.reader import SocketReader
 
     def main():
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -87,9 +87,9 @@ Example of HttpParser:
 
     # try to import C parser then fallback in pure python parser.
     try:
-        from http_parser.parser import HttpParser
+        from toil_http_parser.parser import HttpParser
     except ImportError:
-        from http_parser.pyparser import HttpParser
+        from toil_http_parser.pyparser import HttpParser
 
 
     def main():

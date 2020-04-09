@@ -18,8 +18,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-#ifndef http_parser_h
-#define http_parser_h
+#ifndef toil_http_parser_h
+#define toil_http_parser_h
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -56,8 +56,8 @@ typedef unsigned __int64 uint64_t;
 #define HTTP_MAX_HEADER_SIZE (80*1024)
 
 
-typedef struct http_parser http_parser;
-typedef struct http_parser_settings http_parser_settings;
+typedef struct toil_http_parser toil_http_parser;
+typedef struct toil_http_parser_settings toil_http_parser_settings;
 
 
 /* Callbacks should return non-zero to indicate an error. The parser will
@@ -73,8 +73,8 @@ typedef struct http_parser_settings http_parser_settings;
  * many times for each string. E.G. you might get 10 callbacks for "on_url"
  * each providing just a few characters more data.
  */
-typedef int (*http_data_cb) (http_parser*, const char *at, size_t length);
-typedef int (*http_cb) (http_parser*);
+typedef int (*http_data_cb) (toil_http_parser*, const char *at, size_t length);
+typedef int (*http_cb) (toil_http_parser*);
 
 
 /* Request Methods */
@@ -119,10 +119,10 @@ enum http_method
   };
 
 
-enum http_parser_type { HTTP_REQUEST, HTTP_RESPONSE, HTTP_BOTH };
+enum toil_http_parser_type { HTTP_REQUEST, HTTP_RESPONSE, HTTP_BOTH };
 
 
-/* Flag values for http_parser.flags field */
+/* Flag values for toil_http_parser.flags field */
 enum flags
   { F_CHUNKED               = 1 << 0
   , F_CONNECTION_KEEP_ALIVE = 1 << 1
@@ -187,16 +187,16 @@ enum http_errno {
 #undef HTTP_ERRNO_GEN
 
 
-/* Get an http_errno value from an http_parser */
+/* Get an http_errno value from an toil_http_parser */
 #define HTTP_PARSER_ERRNO(p)            ((enum http_errno) (p)->http_errno)
 
 
-struct http_parser {
+struct toil_http_parser {
   /** PRIVATE **/
-  unsigned char type : 2;     /* enum http_parser_type */
+  unsigned char type : 2;     /* enum toil_http_parser_type */
   unsigned char flags : 6;    /* F_* values from 'flags' enum; semi-public */
-  unsigned char state;        /* enum state from http_parser.c */
-  unsigned char header_state; /* enum header_state from http_parser.c */
+  unsigned char state;        /* enum state from toil_http_parser.c */
+  unsigned char header_state; /* enum header_state from toil_http_parser.c */
   unsigned char index;        /* index into current matcher */
 
   uint32_t nread;          /* # bytes read in various scenarios */
@@ -211,7 +211,7 @@ struct http_parser {
 
   /* 1 = Upgrade header was present and the parser has exited because of that.
    * 0 = No upgrade header present.
-   * Should be checked when http_parser_execute() returns in addition to
+   * Should be checked when toil_http_parser_execute() returns in addition to
    * error checking.
    */
   unsigned char upgrade : 1;
@@ -221,7 +221,7 @@ struct http_parser {
 };
 
 
-struct http_parser_settings {
+struct toil_http_parser_settings {
   http_cb      on_message_begin;
   http_data_cb on_url;
   http_cb      on_status_complete;
@@ -233,7 +233,7 @@ struct http_parser_settings {
 };
 
 
-enum http_parser_url_fields
+enum toil_http_parser_url_fields
   { UF_SCHEMA           = 0
   , UF_HOST             = 1
   , UF_PORT             = 2
@@ -245,14 +245,14 @@ enum http_parser_url_fields
   };
 
 
-/* Result structure for http_parser_parse_url().
+/* Result structure for toil_http_parser_parse_url().
  *
  * Callers should index into field_data[] with UF_* values iff field_set
  * has the relevant (1 << UF_*) bit set. As a courtesy to clients (and
  * because we probably have padding left over), we convert any port to
  * a uint16_t.
  */
-struct http_parser_url {
+struct toil_http_parser_url {
   uint16_t field_set;           /* Bitmask of (1 << UF_*) values */
   uint16_t port;                /* Converted UF_PORT string */
 
@@ -267,19 +267,19 @@ struct http_parser_url {
  * bits 8-15 the minor version number and bits 0-7 the patch level.
  * Usage example:
  *
- *   unsigned long version = http_parser_version();
+ *   unsigned long version = toil_http_parser_version();
  *   unsigned major = (version >> 16) & 255;
  *   unsigned minor = (version >> 8) & 255;
  *   unsigned patch = version & 255;
- *   printf("http_parser v%u.%u.%u\n", major, minor, version);
+ *   printf("toil_http_parser v%u.%u.%u\n", major, minor, version);
  */
-unsigned long http_parser_version(void);
+unsigned long toil_http_parser_version(void);
 
-void http_parser_init(http_parser *parser, enum http_parser_type type);
+void toil_http_parser_init(toil_http_parser *parser, enum toil_http_parser_type type);
 
 
-size_t http_parser_execute(http_parser *parser,
-                           const http_parser_settings *settings,
+size_t toil_http_parser_execute(toil_http_parser *parser,
+                           const toil_http_parser_settings *settings,
                            const char *data,
                            size_t len);
 
@@ -290,7 +290,7 @@ size_t http_parser_execute(http_parser *parser,
  * If you are the server, respond with the "Connection: close" header.
  * If you are the client, close the connection.
  */
-int http_should_keep_alive(const http_parser *parser);
+int http_should_keep_alive(const toil_http_parser *parser);
 
 /* Returns a string version of the HTTP method. */
 const char *http_method_str(enum http_method m);
@@ -302,15 +302,15 @@ const char *http_errno_name(enum http_errno err);
 const char *http_errno_description(enum http_errno err);
 
 /* Parse a URL; return nonzero on failure */
-int http_parser_parse_url(const char *buf, size_t buflen,
+int toil_http_parser_parse_url(const char *buf, size_t buflen,
                           int is_connect,
-                          struct http_parser_url *u);
+                          struct toil_http_parser_url *u);
 
 /* Pause or un-pause the parser; a nonzero value pauses */
-void http_parser_pause(http_parser *parser, int paused);
+void toil_http_parser_pause(toil_http_parser *parser, int paused);
 
 /* Checks if this is the final chunk of the body. */
-int http_body_is_final(const http_parser *parser);
+int http_body_is_final(const toil_http_parser *parser);
 
 #ifdef __cplusplus
 }

@@ -2,10 +2,10 @@
 import socket
 
 try:
-    from http_parser.parser import HttpParser
+    from toil_http_parser.parser import HttpParser
 except ImportError:
-    from http_parser.pyparser import HttpParser
-from http_parser.util import b
+    from toil_http_parser.pyparser import HttpParser
+from toil_http_parser.util import b
 
 def main():
 

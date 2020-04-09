@@ -2,7 +2,7 @@
 # http://code.google.com/p/gyp/
 # To build try this:
 #   svn co http://gyp.googlecode.com/svn/trunk gyp
-#   ./gyp/gyp -f make --depth=`pwd` http_parser.gyp 
+#   ./gyp/gyp -f make --depth=`pwd` toil_http_parser.gyp 
 #   ./out/Debug/test 
 {
   'target_defaults': {
@@ -49,7 +49,7 @@
 
   'targets': [
     {
-      'target_name': 'http_parser',
+      'target_name': 'toil_http_parser',
       'type': 'static_library',
       'include_dirs': [ '.' ],
       'direct_dependent_settings': {
@@ -57,12 +57,12 @@
         'include_dirs': [ '.' ],
       },
       'defines': [ 'HTTP_PARSER_STRICT=0' ],
-      'sources': [ './http_parser.c', ],
+      'sources': [ './toil_http_parser.c', ],
       'conditions': [
         ['OS=="win"', {
           'msvs_settings': {
             'VCCLCompilerTool': {
-              # Compile as C++. http_parser.c is actually C99, but C++ is
+              # Compile as C++. toil_http_parser.c is actually C99, but C++ is
               # close enough in this case.
               'CompileAs': 2,
             },
@@ -72,7 +72,7 @@
     },
 
     {
-      'target_name': 'http_parser_strict',
+      'target_name': 'toil_http_parser_strict',
       'type': 'static_library',
       'include_dirs': [ '.' ],
       'direct_dependent_settings': {
@@ -80,12 +80,12 @@
         'include_dirs': [ '.' ],
       },
       'defines': [ 'HTTP_PARSER_STRICT=1' ],
-      'sources': [ './http_parser.c', ],
+      'sources': [ './toil_http_parser.c', ],
       'conditions': [
         ['OS=="win"', {
           'msvs_settings': {
             'VCCLCompilerTool': {
-              # Compile as C++. http_parser.c is actually C99, but C++ is
+              # Compile as C++. toil_http_parser.c is actually C99, but C++ is
               # close enough in this case.
               'CompileAs': 2,
             },
@@ -97,14 +97,14 @@
     {
       'target_name': 'test-nonstrict',
       'type': 'executable',
-      'dependencies': [ 'http_parser' ],
+      'dependencies': [ 'toil_http_parser' ],
       'sources': [ 'test.c' ]
     },
 
     {
       'target_name': 'test-strict',
       'type': 'executable',
-      'dependencies': [ 'http_parser_strict' ],
+      'dependencies': [ 'toil_http_parser_strict' ],
       'sources': [ 'test.c' ]
     }
   ]

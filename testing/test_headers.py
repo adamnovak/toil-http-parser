@@ -1,8 +1,8 @@
 import pytest
 import io
 
-from http_parser.http import HttpStream
-from http_parser.pyparser import HttpParser as PyHttpParser
+from toil_http_parser.http import HttpStream
+from toil_http_parser.pyparser import HttpParser as PyHttpParser
 
 def test_continuation_header():
     stream = io.BytesIO(b'GET /test HTTP/1.1\r\nX-Test: foo\r\n bar\r\n\r\n')
